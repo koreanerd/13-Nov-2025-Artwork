@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>텍스트 오버플로우 - Text Overflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ffffff;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            background: #ffffff;
+            border: none;
+        }
+
+
+
+        /* 슬라이더 컨트롤 패널 */
+        .slider-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: #333;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            min-width: 280px;
+            max-height: 80vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .slider-panel.hidden {
+            transform: translateX(calc(100% + 40px));
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .slider-panel h3 {
+            color: #222;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .slider-control {
+            margin-bottom: 15px;
+        }
+
+        .slider-control label {
+            display: block;
+            font-size: 12px;
+            color: #444;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .slider-control .value-display {
+            display: inline-block;
+            float: right;
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .slider-control input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.1);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .slider-control input[type="range"]::-webkit-slider-thumb:hover {
+            background: #555;
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #333;
+            cursor: pointer;
+            border: none;
+            transition: background 0.2s;
+        }
+
+        .slider-control input[type="range"]::-moz-range-thumb:hover {
+            background: #555;
+        }
+
+        /* 패널 내 버튼 스타일 */
+        .slider-panel button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px 15px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.2s;
+            font-weight: 500;
+        }
+
+        .slider-panel button:hover {
+            background: #555;
+        }
+
+        .slider-panel .button-group {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        /* 체크박스 스타일 */
+        .checkbox-control {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-control input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-control label {
+            cursor: pointer;
+            font-size: 13px;
+            color: #444;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* 패널 최소화 버튼 */
+        .minimize-button {
+            width: 100%;
+            margin-top: 15px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.1) !important;
+            color: #666 !important;
+            font-size: 11px !important;
+            border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .minimize-button:hover {
+            background: rgba(0, 0, 0, 0.15) !important;
+            color: #444 !important;
+        }
+
+        /* 우측 상단 열기 버튼 (숨겨진) */
+        .open-panel-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(10px);
+            opacity: 0.3;
+        }
+
+        .open-panel-button:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .open-panel-button.visible {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <!-- 슬라이더 컨트롤 패널 -->
+    <div class="slider-panel">
+        <h3>⚙️ 파라미터 조절</h3>
+
+        <div class="slider-control">
+            <label>
+                입구 너비 (상단)
+                <span class="value-display" id="topWidthValue">100</span>
+            </label>
+            <input type="range" id="topWidthSlider" min="50" max="250" value="100" step="10">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                바닥 너비
+                <span class="value-display" id="bottomWidthValue">1800</span>
+            </label>
+            <input type="range" id="bottomWidthSlider" min="200" max="1800" value="1800" step="50">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                프레임 높이
+                <span class="value-display" id="frameHeightValue">925</span>
+            </label>
+            <input type="range" id="frameHeightSlider" min="100" max="1100" value="925" step="25">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                1차 임계점 높이
+                <span class="value-display" id="thresholdValue">130</span>
+            </label>
+            <input type="range" id="thresholdSlider" min="50" max="300" value="130" step="10">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                타이핑 속도
+                <span class="value-display" id="typingSpeedValue">65ms</span>
+            </label>
+            <input type="range" id="typingSpeedSlider" min="20" max="200" value="65" step="5">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                떠오르는 속도
+                <span class="value-display" id="floatSpeedValue">0.08</span>
+            </label>
+            <input type="range" id="floatSpeedSlider" min="0.03" max="0.20" value="0.08" step="0.01">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                프레임 패딩
+                <span class="value-display" id="paddingValue">30</span>
+            </label>
+            <input type="range" id="paddingSlider" min="10" max="80" value="30" step="5">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                글자 크기
+                <span class="value-display" id="fontSizeValue">22</span>
+            </label>
+            <input type="range" id="fontSizeSlider" min="12" max="28" value="22" step="2">
+        </div>
+
+        <div class="slider-control">
+            <label>
+                오버플로우 퍼짐
+                <span class="value-display" id="spreadValue">2.0</span>
+            </label>
+            <input type="range" id="spreadSlider" min="0.3" max="3.0" value="2.0" step="0.1">
+        </div>
+
+        <div class="checkbox-control">
+            <input type="checkbox" id="showFrameCheckbox">
+            <label for="showFrameCheckbox">프레임 표시</label>
+        </div>
+
+        <div class="button-group">
+            <button id="toggleSpawn">⏸️ 생성 정지</button>
+            <button id="reset">🔄 리셋</button>
+        </div>
+
+        <button class="minimize-button" id="minimizePanel">━ 패널 접기</button>
+    </div>
+
+    <!-- 우측 상단 작은 열기 버튼 -->
+    <div class="open-panel-button" id="openPanelButton">⚙</div>
+
+    <div id="canvas-container"></div>
+
+    <!-- Matter.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+
+    <!-- Text content -->
+    <script src="text.js"></script>
+
+    <!-- Main sketch -->
+    <script src="sketch.js"></script>
+</body>
+</html>
