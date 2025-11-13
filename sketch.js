@@ -38,11 +38,14 @@ Runner.run(runner, engine);
 // 전역 중력 비활성화 (개별 글자에 customGravity 적용)
 engine.world.gravity.y = 0;
 
-// 프레임 설정 (사다리꼴 형태)
-let frameBottomWidth = 1800; // 바닥 너비 (넓음) - 슬라이더로 조절 가능
-let frameTopWidth = 100; // 상단 너비 (좁음) - 플라스크 형태 - 슬라이더로 조절 가능
-let frameHeight = 925; // 프레임 높이 - 슬라이더로 조절 가능
-const frameBottomMargin = 0; // 화면 하단에서 떨어진 거리
+// 모바일 감지
+const isMobile = window.innerWidth <= 768;
+
+// 프레임 설정 (사다리꼴 형태) - 모바일 반응형
+let frameBottomWidth = isMobile ? Math.min(window.innerWidth * 0.85, 500) : 1800; // 모바일: 화면의 85% (좌우 중앙)
+let frameTopWidth = isMobile ? 50 : 100; // 모바일: 더 좁은 입구
+let frameHeight = isMobile ? Math.min(window.innerHeight * 0.7, 600) : 925; // 모바일: 화면의 70% 높이
+const frameBottomMargin = isMobile ? 30 : 0; // 모바일: 하단 30px 여백 (하단 정렬)
 const wallThickness = 0;
 
 // 프레임 경계 계산 함수 (화면 크기 변경 시 재계산 가능)
@@ -191,12 +194,12 @@ render.mouse = mouse;
 // 텍스트 내용은 text.js에서 로드됨
 // textContent 변수는 전역으로 사용 가능
 
-// 텍스트 레이아웃 설정
-let fontSize = 22; // 슬라이더로 조절 가능
-let lineHeight = 28;
-let letterSpacing = 22;
-const padding = 20;
-let framePadding = 30; // 프레임과 텍스트 사이 추가 여백 (양쪽 각각) - 슬라이더로 조절 가능
+// 텍스트 레이아웃 설정 - 모바일 반응형
+let fontSize = isMobile ? 16 : 22; // 모바일: 작은 글자
+let lineHeight = isMobile ? 20 : 28;
+let letterSpacing = isMobile ? 16 : 22;
+const padding = isMobile ? 10 : 20;
+let framePadding = isMobile ? 15 : 30; // 모바일: 작은 패딩
 
 // 텍스트 영역 너비 계산 함수 (동적으로 재계산 가능)
 function getTextWidth() {
@@ -864,11 +867,11 @@ console.log(
   "Text Overflow (Typing) initialized! 타이핑 방식으로 글이 써지고, 넘치면 흩어지며 사라집니다."
 );
 
-// 슬라이더 컨트롤 변수
-let threshold1Distance = 130; // frameTop으로부터의 거리
+// 슬라이더 컨트롤 변수 - 모바일 반응형
+let threshold1Distance = isMobile ? 80 : 130; // 모바일: 낮은 임계점
 let floatSpeed = 0.08; // 떠오르는 속도 (customGravity의 절대값)
-let showFrame = false; // 프레임 표시 여부
-let spreadMultiplier = 2.0; // 오버플로우 퍼짐 배율 (0.3-3.0)
+let showFrame = isMobile ? false : false; // 모바일: 프레임 표시 안함
+let spreadMultiplier = isMobile ? 1.5 : 2.0; // 모바일: 약간 적은 퍼짐
 
 // 슬라이더 이벤트 리스너
 // 1. 입구 너비 (상단)

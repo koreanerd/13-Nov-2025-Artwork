@@ -213,6 +213,26 @@
         .open-panel-button.visible {
             display: flex;
         }
+
+        /* 모바일 반응형 (768px 이하) */
+        @media (max-width: 768px) {
+            /* 패널과 열기 버튼 완전히 숨기기 */
+            .slider-panel,
+            .open-panel-button {
+                display: none !important;
+            }
+
+            /* 캔버스 컨테이너 전체 화면 */
+            #canvas-container {
+                width: 100vw;
+                height: 100vh;
+            }
+
+            body {
+                overflow: hidden;
+                touch-action: none; /* 모바일 스크롤 방지 */
+            }
+        }
     </style>
 </head>
 <body>
