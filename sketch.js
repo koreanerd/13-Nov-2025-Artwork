@@ -42,7 +42,9 @@ engine.world.gravity.y = 0;
 const isMobile = window.innerWidth <= 768;
 
 // 프레임 설정 (사다리꼴 형태) - 모바일 반응형
-let frameBottomWidth = isMobile ? Math.min(window.innerWidth * 0.85, 500) : 1800; // 모바일: 화면의 85% (좌우 중앙)
+let frameBottomWidth = isMobile
+  ? Math.min(window.innerWidth * 0.85, 500)
+  : 1800; // 모바일: 화면의 85% (좌우 중앙)
 let frameTopWidth = isMobile ? 50 : 100; // 모바일: 더 좁은 입구
 let frameHeight = isMobile ? Math.min(window.innerHeight * 0.7, 600) : 925; // 모바일: 화면의 70% 높이
 const frameBottomMargin = isMobile ? 30 : 0; // 모바일: 하단 30px 여백 (하단 정렬)
@@ -730,7 +732,7 @@ Events.on(render, "afterRender", () => {
   const context = render.context;
   const bodies = Composite.allBodies(world);
 
-  context.font = `${fontSize}px Georgia, serif`;
+  context.font = `${fontSize}px Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif`;
   context.textAlign = "center";
   context.textBaseline = "middle";
 
