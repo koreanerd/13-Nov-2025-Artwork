@@ -1,0 +1,30 @@
+{
+  "name": "artwork",
+  "version": "1.0.0",
+  "main": "sketch.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koreanerd/13-Nov-2025-Artwork.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koreanerd/13-Nov-2025-Artwork/issues"
+  },
+  "homepage": "https://github.com/koreanerd/13-Nov-2025-Artwork#readme",
+  "description": "",
+  "dependencies": {
+    "matter-js": "^0.20.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.20.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.4"
+  }
+}
