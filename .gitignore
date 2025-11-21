@@ -39,3 +39,9 @@ npm-debug.log*
 
 # Documentation (내부용)
 CLAUDE.md
+
+# Dependencies
+node_modules/
+
+# Build Output
+dist/
